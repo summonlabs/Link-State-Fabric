@@ -29,13 +29,13 @@ Link State Fabric does **not** own, implement or decide:
 * canonical identity (Fabric Registry owns identity);
 * structural connectivity and the topology graph (Fabric Topology owns structure);
 * port identity, port configuration or port lifecycle beyond binding evidence
-  (Port Fabric owns those);
+  ([Port Fabric](https://github.com/pngen/Port-Fabric) owns those);
 * routes, path planning, path legality or bandwidth reservation
-  (Route Fabric and Path Authority own those);
+  ([Route Fabric](https://github.com/summonlabs/Route-Fabric) and [Path Authority](https://github.com/pngen/Path-Authority) own those);
 * congestion state or congestion control (Network Congestion Fabric owns those);
 * QoS, flow scheduling or traffic engineering;
 * failure-domain semantics, switch configuration rollout, capability truth
-  (Fabric Capability Registry owns capability truth).
+  ([Fabric Capability Registry](https://github.com/pngen/Fabric-Capability-Registry) owns capability truth).
 
 A current UP link is not automatically a legal path. A DEGRADED link may still be
 usable by later policy layers. Link State Fabric says what the link's operational
