@@ -1,7 +1,6 @@
 # Link State Fabric
 
-Link State Fabric is the authoritative dynamic link-condition runtime of the
-Distributed Fabric Infrastructure stack. It answers one question:
+Link State Fabric is the authoritative dynamic link-condition runtime for data-center fabric infrastructure. It answers one question:
 
 > What is the current authoritative operational state of this exact fabric link
 > right now, which evidence supports that state, how current is that evidence,
