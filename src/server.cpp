@@ -291,7 +291,15 @@ void CoordinatorServer::accept_loop() {
     }
     {
       std::lock_guard<std::mutex> lock(mutex_);
-      if (sessions_.size() >= config_.max_sessions) {
+      // Sessions that ended while accept() was waiting are still listed (they are
+      // pruned at the top of the loop); only live sessions occupy a slot.
+      std::size_t live = 0;
+      for (const std::shared_ptr<Session>& existing : sessions_) {
+        if (!existing->finished) {
+          ++live;
+        }
+      }
+      if (live >= config_.max_sessions) {
         detail::net_shutdown(client);
         detail::net_close(client);
         continue;

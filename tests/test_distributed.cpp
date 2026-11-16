@@ -1,3 +1,4 @@
+#include <thread>
 #include <algorithm>
 #include <cstdio>
 #include <string>
@@ -348,6 +349,31 @@ LSF_TEST(server_start_stop_cycles_leave_no_session_behind) {
                                           9, "cycle.replay"));
   LSF_CHECK(replayed.code == OutcomeCode::StaleAuthority);
   stale_client.abandon();
+  LSF_REQUIRE(server.stop().code == OutcomeCode::Committed);
+}
+
+LSF_TEST(a_freed_session_slot_admits_the_next_connection) {
+  LinkStateEngine engine;
+  const std::vector<LinkId> links = bind_links(engine, {"slot.one"});
+  CoordinatorConfig config;
+  config.port = 0;
+  config.max_sessions = 1;
+  CoordinatorServer server(engine, config);
+  LSF_REQUIRE(server.start().code == OutcomeCode::Committed);
+  {
+    PublisherClient first(client_config(config.bind_address, server.port(), "slot-agent",
+                                        "slot-boot-1", "slot-source", links));
+    LSF_REQUIRE(first.connect().code == OutcomeCode::Committed);
+    LSF_REQUIRE(first.disconnect().code == OutcomeCode::Committed);
+  }
+  // The only session has ended, so its slot is free before the next peer connects.
+  while (server.session_count() != 0) {
+    std::this_thread::yield();
+  }
+  PublisherClient second(client_config(config.bind_address, server.port(), "slot-agent",
+                                       "slot-boot-2", "slot-source", links));
+  LSF_CHECK(second.connect().code == OutcomeCode::Committed);
+  (void)second.disconnect();
   LSF_REQUIRE(server.stop().code == OutcomeCode::Committed);
 }
 
